@@ -13,6 +13,9 @@
 
     <h4 class="font-bold text-3xl text-left pb-5">Account NO: {{request.user.account.account_no}}</h4>
     <h1 class="font-bold text-3xl text-center pb-5">Update Profile Information</h1>
+    <a href="{% url 'pass_change' %}" class="mb-8 text-blue-500 hover:text-blue-700 underline">
+        Change your password
+    </a>
     <div class="w-full mt-10">
         <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             {% csrf_token %} {% for hidden_field in form.hidden_fields %} {{ hidden_field.errors }} {{ hidden_field }} {% endfor %}
@@ -120,6 +123,8 @@
                 </button>
             </div>
         </form>
+     
     </div>
-</div>
+
+    </div>
 {% endblock %}

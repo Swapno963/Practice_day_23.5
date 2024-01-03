@@ -3,9 +3,16 @@ from django.views.generic import FormView
 from .forms import UserRegistrationForm,UserUpdateForm
 from django.contrib.auth import login, logout
 from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView,PasswordChangeView
 from django.views import View
 from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import PasswordChangeForm
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+
+
+
 
 class UserRegistrationView(FormView):
     template_name = 'accounts/user_registration.html'
@@ -47,4 +54,26 @@ class UserBankAccountUpdateView(View):
         return render(request, self.template_name, {'form': form})
     
     
-    
+# password change
+class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('home')
+    template_name = 'accounts/password_change.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.request.user
+        subject = 'Password changed successfully.'
+        template ='accounts/password_change_eamil.html'
+
+        message = render_to_string(template, {
+            'user':self.request.user,
+
+        })
+
+        send_email = EmailMultiAlternatives(subject,'',to=[user.email])
+        send_email.attach_alternative(message, 'text/html')
+        send_email.send()
+
+        return response
+
